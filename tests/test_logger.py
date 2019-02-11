@@ -10,24 +10,10 @@ Changes:
 """
 
 from dynamic_hosts.logger import logger
+from tests.console import read_console
 
 import json
 import unittest
-
-import sys
-import io
-from contextlib import contextmanager
-
-
-@contextmanager
-def capture(command, *args, **kwargs):
-    out, sys.stdout = sys.stdout, io.StringIO()
-    try:
-        command(*args, **kwargs)
-        sys.stdout.seek(0)
-        yield sys.stdout.read()
-    finally:
-        sys.stdout = out
 
 
 class TestLogger(unittest.TestCase):
@@ -83,28 +69,28 @@ class TestLogger(unittest.TestCase):
         for word in self._test_words:
             expected_output = '\x1b[0m[\x1b[31m ERROR \x1b[0m]\x1b[91m %s\n' % word
 
-            with capture(self._logger.log_error, word) as output:
+            with read_console(self._logger.log_error, word) as output:
                 self.assertEqual(expected_output, output)
 
     def test_info_messages(self):
         for word in self._test_words:
             expected_output = '\x1b[0m[\x1b[34m INFO  \x1b[0m]\x1b[0m %s\n' % word
 
-            with capture(self._logger.log_info, word) as output:
+            with read_console(self._logger.log_info, word) as output:
                 self.assertEqual(expected_output, output)
 
     def test_warn_messages(self):
         for word in self._test_words:
             expected_output = '\x1b[0m[\x1b[93mWARNING\x1b[0m]\x1b[93m %s\n' % word
 
-            with capture(self._logger.log_warning, word) as output:
+            with read_console(self._logger.log_warning, word) as output:
                 self.assertEqual(expected_output, output)
 
     def test_verbose_messages(self):
         for word in self._test_words:
             expected_output = '\x1b[0m[\x1b[32mVERBOSE\x1b[0m]\x1b[92m %s\n' % word
 
-            with capture(self._logger.log_verbose, word) as output:
+            with read_console(self._logger.log_verbose, word) as output:
                 self.assertEqual(expected_output, output)
 
 

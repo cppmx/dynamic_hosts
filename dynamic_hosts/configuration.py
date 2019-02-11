@@ -84,8 +84,8 @@ class DevConfig(Config):
     def __init__(self):
         self.verbose = 0
 
-        self._servers_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'dev', 'servers')
-        self._servers_file = "servers.json"
+        self._servers_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'db', 'dev')
+        self._servers_file = "dev_data.json"
 
         self.client = os.environ.get('THE_CLIENT')
         self.environment = os.environ.get('THE_ENVIRONMENT')
@@ -97,8 +97,8 @@ class TestConfig(Config):
     def __init__(self):
         self.verbose = 0
 
-        self._servers_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'test', 'servers')
-        self._servers_file = "servers.json"
+        self._servers_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'db', 'test')
+        self._servers_file = "test_data.json"
 
         self.client = os.environ.get('THE_CLIENT')
         self.environment = os.environ.get('THE_ENVIRONMENT')
@@ -110,8 +110,8 @@ class ProdConfig(Config):
     def __init__(self):
         self.verbose = 0
 
-        self._servers_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'servers')
-        self._servers_file = "servers.json"
+        self._servers_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'db', 'prod')
+        self._servers_file = "data.json"
 
         self.client = os.environ.get('THE_CLIENT')
         self.environment = os.environ.get('THE_ENVIRONMENT')

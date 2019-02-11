@@ -1,0 +1,47 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/cppmx/dynamic_hosts/master/dynamic_hosts/db.schema.json",
+  "type": "object",
+  "title": "The Root Schema",
+  "required": [
+    "host",
+    "environment",
+    "role",
+    "location"
+  ],
+  "properties": {
+    "host": {
+      "$id": "#/items/properties/host",
+      "type": "string",
+      "title": "The Hostname",
+      "pattern": "(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]"
+    },
+    "environment": {
+      "$id": "#/items/properties/environment",
+      "type": "string",
+      "enum": [
+        "dev",
+        "itg",
+        "pro"
+      ],
+      "title": "The Environment of the host"
+    },
+    "role": {
+      "$id": "#/items/properties/role",
+      "type": "string",
+      "enum": [
+        "app",
+        "db",
+        "web",
+        "zoo"
+      ],
+      "title": "The Role of the host"
+    },
+    "location": {
+      "$id": "#/items/properties/location",
+      "type": "string",
+      "title": "The Location Schema"
+    }
+  }
+}
