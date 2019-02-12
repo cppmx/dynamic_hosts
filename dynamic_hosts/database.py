@@ -7,6 +7,7 @@ Author: Carlos Colon
 Description: 
 Changes:
     06/02/2019     CECR     Initial version
+    12/02/2019     CECR     Added the total of servers that are returned after being filtered
 """
 
 import os
@@ -295,7 +296,7 @@ class ServersDB:
         """
 
         if self._config.verbose > 0:
-            self._log.log_verbose("Getting all servers")
+            self._log.log_verbose("Getting {} servers".format(str(len(self._servers))))
 
         return self._servers
 
@@ -322,7 +323,7 @@ class ServersDB:
             os.makedirs(os.path.join(self._config.servers_folder, self._config.client), 755)
 
         """Check if there is a DB file for this client, if so then load and validate the data"""
-        self._db_file = self._config.get_db_file(self._config.client)
+        self._db_file = self._config.get_db_file()
 
         if os.path.isfile(self._db_file):
             with open(self._db_file) as f:
