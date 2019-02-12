@@ -12,6 +12,7 @@ Changes:
 from dynamic_hosts.logger import logger
 from tests.console import read_console
 
+import os
 import json
 import unittest
 
@@ -43,7 +44,7 @@ class TestLogger(unittest.TestCase):
     def setUp(self):
         self._logger = logger.Logger()
 
-        with open("words.json") as f:
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "words.json")) as f:
             self._test_words = json.load(f)
 
     def test_colors(self):

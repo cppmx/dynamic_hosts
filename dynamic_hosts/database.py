@@ -16,6 +16,15 @@ import jsonschema
 import dynamic_hosts.logger.logger as log
 
 
+class Singleton(type):
+    instance = None
+
+    def __call__(cls, *args, **kw):
+        if not cls.instance:
+            cls.instance = super(Singleton, cls).__call__(*args, **kw)
+        return cls.instance
+
+
 def _request_data(field):
     """This function requests a data in the terminal
 
@@ -34,6 +43,7 @@ class Server:
     This object will be used as a data model of the database
     """
 
+    _verbose = 0
     _schema = {}
     _server = {}
     _logger = log.Logger()
@@ -44,10 +54,12 @@ class Server:
         try:
             v = jsonschema.Draft4Validator(self._schema)
             for error in sorted(v.iter_errors(data), key=str):
-                self._logger.log_error(error)
+                if self._verbose > 0:
+                    self._logger.log_error(error)
                 result = False
         except jsonschema.ValidationError as e:
-            self._logger.log_error(e.message)
+            if self._verbose > 0:
+                self._logger.log_error(e.message)
             result = False
 
         return result
@@ -78,11 +90,13 @@ class Server:
 
         return self.__validate()
 
-    def __init__(self, data):
+    def __init__(self, data, verbose=0):
         """Object constructor
 
         :param data: A dictionary with the data of the new object
         """
+
+        self._verbose = verbose
 
         '''Loads the db data'''
         _server_schema_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "db", "record.schema.json")
@@ -108,6 +122,7 @@ class Server:
 class ServersDB:
     """Object that manages the functions of the database"""
 
+    __metaclass__ = Singleton
     _db_file = ''
     _config = None
     _log = log.Logger()

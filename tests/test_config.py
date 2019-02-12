@@ -23,7 +23,7 @@ class TestDevelopmentConfig(unittest.TestCase):
 
     def setUp(self):
         self._config = configuration.DevConfig()
-        with open("words.json") as f:
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "words.json")) as f:
             self._test_words = json.load(f)
 
     def test_dir_name(self):
@@ -88,7 +88,7 @@ class TestTestingConfig(unittest.TestCase):
 
     def setUp(self):
         self._config = configuration.TestConfig()
-        with open("words.json") as f:
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "words.json")) as f:
             self._test_words = json.load(f)
 
     def test_dir_name(self):
@@ -153,7 +153,7 @@ class TestProductionConfig(unittest.TestCase):
 
     def setUp(self):
         self._config = configuration.ProdConfig()
-        with open("words.json") as f:
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "words.json")) as f:
             self._test_words = json.load(f)
 
     def test_dir_name(self):
@@ -213,4 +213,4 @@ class TestProductionConfig(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main(verbosity=2)
+    unittest.main()

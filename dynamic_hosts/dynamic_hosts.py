@@ -19,6 +19,22 @@ class DynamicHosts:
     _db = None
     _log = log.Logger()
 
+    @property
+    def get_client(self):
+        return self._config.client
+
+    @property
+    def get_environment(self):
+        return self._config.environment
+
+    @property
+    def get_role(self):
+        return self._config.role
+
+    @property
+    def get_location(self):
+        return self._config.location
+
     def __allow_host(self, host_data):
         result = True
 

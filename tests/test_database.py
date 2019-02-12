@@ -24,31 +24,72 @@ class TestDatabase(unittest.TestCase):
     _db = None
     _config = None
     _test_words = ''
-    _max_tests = 100
+    _max_tests = 500
 
     def setUp(self):
-        with open("words.json") as f:
+        """Setting up DB tests"""
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "words.json")) as f:
             self._test_words = json.load(f)
 
+        test_counter = 0
+
+        """Let's create a test DB"""
+        self._config = configuration.TestConfig()
+        self._db = ServersDB(self._config)
+
+        if os.path.isfile(self._config.get_db_file()):
+            os.remove(self._config.get_db_file())
+            time.sleep(2.5)  # sleep time in seconds
+
+        for word in self._test_words:
+            env = choice(['dev', 'itg', 'pro'])
+            role = choice(['app', 'db', 'web', 'zoo'])
+            server_data = {}
+            test_counter += 1
+            server_data['host'] = "{}{}.{}{}".format(word, word, word, word)
+            server_data['environment'] = env
+            server_data['role'] = role
+            server_data['location'] = "{}.{}-{}.{}".format(word, word, word, word)
+
+            if len(self._db.get_servers('host', server_data['host'])) == 0:
+                new_server = Server(server_data)
+                self._db.add_new_server(new_server)
+
+            if test_counter == self._max_tests:
+                break
+
+    def tearDown(self):
+        """Cleaning up DB Tests"""
+        if self._config and os.path.isfile(self._config.get_db_file()):
+            os.remove(self._config.get_db_file())
+            time.sleep(2.5)  # sleep time in seconds
+
+        self._db = None
+        self._config = None
+
     def test_dev_instance(self):
+        """Testing Development instance"""
         self._config = configuration.DevConfig()
         self._db = ServersDB(self._config)
 
         self.assertIsInstance(self._db, ServersDB)
 
     def test_test_instance(self):
+        """Testing Test instance"""
         self._config = configuration.TestConfig()
         self._db = ServersDB(self._config)
 
         self.assertIsInstance(self._db, ServersDB)
 
     def test_prod_instance(self):
+        """Testing Production instance"""
         self._config = configuration.ProdConfig()
         self._db = ServersDB(self._config)
 
         self.assertIsInstance(self._db, ServersDB)
 
     def test_server_object(self):
+        """Testing ServerDB object"""
         test_counter = 0
 
         for word in self._test_words:
@@ -70,6 +111,7 @@ class TestDatabase(unittest.TestCase):
                 break
 
     def test_server_exceptions(self):
+        """Testing Server exceptions"""
         test_counter = 0
 
         for word in self._test_words:
@@ -89,57 +131,40 @@ class TestDatabase(unittest.TestCase):
                 break
 
     def test_add_servers_exceptions(self):
+        """Testing exceptions when adding new server records"""
         self._config = configuration.TestConfig()
         self._db = ServersDB(self._config)
 
         test_counter = 0
 
-        if os.path.isfile(self._config.get_db_file()):
-            os.remove(self._config.get_db_file())
-            time.sleep(2.5)  # sleep time in seconds
-
         for word in self._test_words:
-            env = choice(['dev', 'itg', 'pro'])
-            role = choice(['app', 'db', 'web', 'zoo'])
-            server_data = {}
             test_counter += 1
-            server_data['host'] = "{}{}.{}{}".format(word, word, word, word)
-            server_data['environment'] = env
-            server_data['role'] = role
-            server_data['location'] = "{}.{}-{}.{}".format(word, word, word, word)
+            host = "{}{}.{}{}".format(word, word, word, word)
 
-            new_server = Server(server_data)
+            record = self._db.get_servers('host', host)
 
-            self._db.add_new_server(new_server)
+            if len(record) == 1:
+                with self.assertRaises(Exception) as context:
+                    self._db.add_new_server(record[0])
 
-            with self.assertRaises(Exception) as context:
-                self._db.add_new_server(new_server)
-
-            self.assertTrue('Duplicated data' in str(context.exception))
+                self.assertTrue('Duplicated data' in str(context.exception))
 
             if test_counter == self._max_tests:
                 break
-
-        if os.path.isfile(self._config.get_db_file()):
-            os.remove(self._config.get_db_file())
-            time.sleep(2.5)  # sleep time in seconds
 
     def test_add_servers(self):
+        """Testing add new server records"""
         self._config = configuration.TestConfig()
         self._db = ServersDB(self._config)
 
         test_counter = 0
-
-        if os.path.isfile(self._config.get_db_file()):
-            os.remove(self._config.get_db_file())
-            time.sleep(2.5)  # sleep time in seconds
 
         for word in self._test_words:
             env = choice(['dev', 'itg', 'pro'])
             role = choice(['app', 'db', 'web', 'zoo'])
             server_data = {}
             test_counter += 1
-            server_data['host'] = "{}{}.{}{}".format(word, word, word, word)
+            server_data['host'] = "{}{}.{}{}.net".format(word, word, word, word)
             server_data['environment'] = env
             server_data['role'] = role
             server_data['location'] = "{}.{}-{}.{}".format(word, word, word, word)
@@ -147,103 +172,66 @@ class TestDatabase(unittest.TestCase):
             new_server = Server(server_data)
 
             self._db.add_new_server(new_server)
+
             inserted = self._db.get_servers('host', server_data['host'])
 
             self.assertEqual(inserted[0].get_data(), new_server.get_data())
 
             if test_counter == self._max_tests:
                 break
-
-        if os.path.isfile(self._config.get_db_file()):
-            os.remove(self._config.get_db_file())
-            time.sleep(2.5)  # sleep time in seconds
 
     def test_update_servers(self):
+        """Testing update server records"""
         self._config = configuration.TestConfig()
         self._db = ServersDB(self._config)
 
         test_counter = 0
 
-        if os.path.isfile(self._config.get_db_file()):
-            os.remove(self._config.get_db_file())
-            time.sleep(2.5)  # sleep time in seconds
-
         for word in self._test_words:
-            env = choice(['dev', 'itg', 'pro'])
-            role = choice(['app', 'db', 'web', 'zoo'])
             server_data = {}
-            update_data = {}
 
             test_counter += 1
 
             server_data['host'] = "{}{}.{}{}".format(word, word, word, word)
-            server_data['environment'] = env
-            server_data['role'] = role
-            server_data['location'] = "{}.{}-{}.{}".format(word, word, word, word)
 
-            new_server = Server(server_data)
-            self._db.add_new_server(new_server)
-            inserted = self._db.get_servers('host', server_data['host'])
+            record = self._db.get_servers('host', server_data['host'])
 
-            self.assertEqual(inserted[0].get_data(), new_server.get_data())
+            if len(record) == 1:
+                _data = record[0].get_data()
+                _data['location'] = "{}{}-{}{}".format(word, word, word, word)
+                new_data = Server(_data)
+                self._db.update_server(new_data)
 
-            update_data['host'] = server_data['host']
-            server_data['environment'] = env
-            server_data['role'] = role
-            update_data['location'] = "{}{}-{}{}".format(word, word, word, word)
+                updated = self._db.get_servers('host', server_data['host'])
 
-            updated_server = Server(server_data)
-            self._db.update_server(updated_server)
-            updated = self._db.get_servers('host', server_data['host'])
-
-            self.assertEqual(updated_server.get_data(), updated[0].get_data())
+                self.assertEqual(new_data.get_data(), updated[0].get_data())
 
             if test_counter == self._max_tests:
                 break
 
-        if os.path.isfile(self._config.get_db_file()):
-            os.remove(self._config.get_db_file())
-            time.sleep(2.5)  # sleep time in seconds
-
     def test_delete_server(self):
+        """Testing delete server records"""
         self._config = configuration.TestConfig()
         self._db = ServersDB(self._config)
 
         test_counter = 0
 
-        if os.path.isfile(self._config.get_db_file()):
-            os.remove(self._config.get_db_file())
-            time.sleep(2.5)  # sleep time in seconds
-
         for word in self._test_words:
-            env = choice(['dev', 'itg', 'pro'])
-            role = choice(['app', 'db', 'web', 'zoo'])
-            server_data = {}
             test_counter += 1
-            server_data['host'] = "{}{}.{}{}".format(word, word, word, word)
-            server_data['environment'] = env
-            server_data['role'] = role
-            server_data['location'] = "{}.{}-{}.{}".format(word, word, word, word)
+            host = "{}{}.{}{}".format(word, word, word, word)
 
-            new_server = Server(server_data)
+            record = self._db.get_servers('host', host)
 
-            self._db.add_new_server(new_server)
-            inserted = self._db.get_servers('host', server_data['host'])
+            if len(record) == 1:
+                self._db.delete_server(record[0])
 
-            self.assertEqual(inserted[0].get_data(), new_server.get_data())
+                erased = self._db.get_servers('host', host)
 
-            self._db.delete_server(inserted[0])
-            erased = self._db.get_servers('host', server_data['host'])
-
-            self.assertEqual([], erased)
+                self.assertEqual(0, len(erased))
 
             if test_counter == 10:
                 break
 
-        if os.path.isfile(self._config.get_db_file()):
-            os.remove(self._config.get_db_file())
-            time.sleep(2.5)  # sleep time in seconds
-
 
 if __name__ == '__main__':
-    unittest.main(verbosity=2)
+    unittest.main()
