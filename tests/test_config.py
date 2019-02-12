@@ -7,6 +7,7 @@ Author: Carlos Colon
 Description: 
 Changes:
     06/02/2019     CECR     Initial version
+    12/02/2019     CECR     Added tests for location
 """
 
 from dynamic_hosts import configuration
@@ -25,36 +26,18 @@ class TestDevelopmentConfig(unittest.TestCase):
         with open("words.json") as f:
             self._test_words = json.load(f)
 
-    def test_folder_name(self):
-        self.assertEqual("servers",
-                         os.path.basename(self._config.servers_folder),
-                         "Folder name is incorrect")
-
     def test_dir_name(self):
         self.assertEqual("dev",
+                         os.path.basename(self._config.servers_folder),
+                         "Folder name is incorrect")
+        self.assertEqual("db",
                          os.path.basename(os.path.dirname(self._config.servers_folder)),
                          "Folder name is incorrect")
 
     def test_file_name(self):
-        self.assertEqual("servers.json",
+        self.assertEqual("dev_data.json",
                          self._config.servers_file,
                          "DB file name is incorrect")
-
-    def test_db_file_no_client(self):
-        self.assertEqual("servers.json",
-                         os.path.basename(self._config.get_db_file()),
-                         "Folder name is incorrect")
-        self.assertEqual("servers",
-                         os.path.basename(os.path.dirname(self._config.get_db_file())),
-                         "Folder name is incorrect")
-
-    def test_db_file_some_client(self):
-        self.assertEqual("servers.json",
-                         os.path.basename(self._config.get_db_file('test')),
-                         "Folder name is incorrect")
-        self.assertEqual("some_client",
-                         os.path.basename(os.path.dirname(self._config.get_db_file('some_client'))),
-                         "Folder name is incorrect")
 
     def test_client_prop(self):
         for word in self._test_words:
@@ -64,21 +47,39 @@ class TestDevelopmentConfig(unittest.TestCase):
 
     def test_env_prop(self):
         for word in self._test_words:
-            self._config.environment = word
+            os.environ['THE_ENVIRONMENT'] = word
+            self._config = configuration.DevConfig()
 
             self.assertEqual(word, self._config.environment, "Environment name does not match")
 
+        del os.environ['THE_ENVIRONMENT']
+
     def test_group_prop(self):
         for word in self._test_words:
-            self._config.group = word
+            os.environ['THE_GROUP'] = word
+            self._config = configuration.DevConfig()
 
             self.assertEqual(word, self._config.group, "Group name does not match")
 
+        del os.environ['THE_GROUP']
+
     def test_role_prop(self):
         for word in self._test_words:
-            self._config.role = word
+            os.environ['THE_ROLE'] = word
+            self._config = configuration.DevConfig()
 
             self.assertEqual(word, self._config.role, "Role name does not match")
+
+        del os.environ['THE_ROLE']
+
+    def test_location_prop(self):
+        for word in self._test_words:
+            os.environ['THE_LOCATION'] = word
+            self._config = configuration.DevConfig()
+
+            self.assertEqual(word, self._config.location, "Location name does not match")
+
+        del os.environ['THE_LOCATION']
 
 
 class TestTestingConfig(unittest.TestCase):
@@ -90,36 +91,18 @@ class TestTestingConfig(unittest.TestCase):
         with open("words.json") as f:
             self._test_words = json.load(f)
 
-    def test_folder_name(self):
-        self.assertEqual("servers",
-                         os.path.basename(self._config.servers_folder),
-                         "Folder name is incorrect")
-
     def test_dir_name(self):
         self.assertEqual("test",
+                         os.path.basename(self._config.servers_folder),
+                         "Folder name is incorrect")
+        self.assertEqual("db",
                          os.path.basename(os.path.dirname(self._config.servers_folder)),
                          "Folder name is incorrect")
 
     def test_file_name(self):
-        self.assertEqual("servers.json",
+        self.assertEqual("test_data.json",
                          self._config.servers_file,
                          "DB file name is incorrect")
-
-    def test_db_file_no_client(self):
-        self.assertEqual("servers.json",
-                         os.path.basename(self._config.get_db_file()),
-                         "Folder name is incorrect")
-        self.assertEqual("servers",
-                         os.path.basename(os.path.dirname(self._config.get_db_file())),
-                         "Folder name is incorrect")
-
-    def test_db_file_some_client(self):
-        self.assertEqual("servers.json",
-                         os.path.basename(self._config.get_db_file('test')),
-                         "Folder name is incorrect")
-        self.assertEqual("some_client",
-                         os.path.basename(os.path.dirname(self._config.get_db_file('some_client'))),
-                         "Folder name is incorrect")
 
     def test_client_prop(self):
         for word in self._test_words:
@@ -129,21 +112,39 @@ class TestTestingConfig(unittest.TestCase):
 
     def test_env_prop(self):
         for word in self._test_words:
-            self._config.environment = word
+            os.environ['THE_ENVIRONMENT'] = word
+            self._config = configuration.TestConfig()
 
             self.assertEqual(word, self._config.environment, "Environment name does not match")
 
+        del os.environ['THE_ENVIRONMENT']
+
     def test_group_prop(self):
         for word in self._test_words:
-            self._config.group = word
+            os.environ['THE_GROUP'] = word
+            self._config = configuration.TestConfig()
 
             self.assertEqual(word, self._config.group, "Group name does not match")
 
+        del os.environ['THE_GROUP']
+
     def test_role_prop(self):
         for word in self._test_words:
-            self._config.role = word
+            os.environ['THE_ROLE'] = word
+            self._config = configuration.TestConfig()
 
             self.assertEqual(word, self._config.role, "Role name does not match")
+
+        del os.environ['THE_ROLE']
+
+    def test_location_prop(self):
+        for word in self._test_words:
+            os.environ['THE_LOCATION'] = word
+            self._config = configuration.TestConfig()
+
+            self.assertEqual(word, self._config.location, "Location name does not match")
+
+        del os.environ['THE_LOCATION']
 
 
 class TestProductionConfig(unittest.TestCase):
@@ -155,36 +156,18 @@ class TestProductionConfig(unittest.TestCase):
         with open("words.json") as f:
             self._test_words = json.load(f)
 
-    def test_folder_name(self):
-        self.assertEqual("servers",
+    def test_dir_name(self):
+        self.assertEqual("prod",
                          os.path.basename(self._config.servers_folder),
                          "Folder name is incorrect")
-
-    def test_dir_name(self):
-        self.assertEqual("dynamic_hosts",
+        self.assertEqual("db",
                          os.path.basename(os.path.dirname(self._config.servers_folder)),
                          "Folder name is incorrect")
 
     def test_file_name(self):
-        self.assertEqual("servers.json",
+        self.assertEqual("data.json",
                          self._config.servers_file,
                          "DB file name is incorrect")
-
-    def test_db_file_no_client(self):
-        self.assertEqual("servers.json",
-                         os.path.basename(self._config.get_db_file()),
-                         "Folder name is incorrect")
-        self.assertEqual("servers",
-                         os.path.basename(os.path.dirname(self._config.get_db_file())),
-                         "Folder name is incorrect")
-
-    def test_db_file_some_client(self):
-        self.assertEqual("servers.json",
-                         os.path.basename(self._config.get_db_file('test')),
-                         "Folder name is incorrect")
-        self.assertEqual("some_client",
-                         os.path.basename(os.path.dirname(self._config.get_db_file('some_client'))),
-                         "Folder name is incorrect")
 
     def test_client_prop(self):
         for word in self._test_words:
@@ -194,22 +177,40 @@ class TestProductionConfig(unittest.TestCase):
 
     def test_env_prop(self):
         for word in self._test_words:
-            self._config.environment = word
+            os.environ['THE_ENVIRONMENT'] = word
+            self._config = configuration.ProdConfig()
 
             self.assertEqual(word, self._config.environment, "Environment name does not match")
 
+        del os.environ['THE_ENVIRONMENT']
+
     def test_group_prop(self):
         for word in self._test_words:
-            self._config.group = word
+            os.environ['THE_GROUP'] = word
+            self._config = configuration.ProdConfig()
 
             self.assertEqual(word, self._config.group, "Group name does not match")
 
+        del os.environ['THE_GROUP']
+
     def test_role_prop(self):
         for word in self._test_words:
-            self._config.role = word
+            os.environ['THE_ROLE'] = word
+            self._config = configuration.ProdConfig()
 
             self.assertEqual(word, self._config.role, "Role name does not match")
 
+        del os.environ['THE_ROLE']
+
+    def test_location_prop(self):
+        for word in self._test_words:
+            os.environ['THE_LOCATION'] = word
+            self._config = configuration.ProdConfig()
+
+            self.assertEqual(word, self._config.location, "Location name does not match")
+
+        del os.environ['THE_LOCATION']
+
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(verbosity=2)

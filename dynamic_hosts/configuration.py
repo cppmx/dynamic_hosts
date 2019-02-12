@@ -7,6 +7,7 @@ Author: Carlos Colon
 Description: 
 Changes:
     06/02/2019     CECR     Initial version
+    12/02/2019     CECR     Added location
 """
 
 import os
@@ -22,6 +23,7 @@ class Config:
     _environment = ''
     _group = ''
     _role = ''
+    _location = ''
 
     @property
     def servers_folder(self):
@@ -73,11 +75,16 @@ class Config:
     def role(self, value):
         self._role = value
 
-    def get_db_file(self, client=''):
-        if not client:
-            return os.path.join(self._servers_folder, self._client, self._servers_file)
-        else:
-            return os.path.join(self._servers_folder, client, self._servers_file)
+    @property
+    def location(self):
+        return self._location
+
+    @location.setter
+    def location(self, value):
+        self._location = value
+
+    def get_db_file(self):
+        return os.path.join(self._servers_folder, self._client, self._servers_file)
 
 
 class DevConfig(Config):
@@ -91,6 +98,7 @@ class DevConfig(Config):
         self.environment = os.environ.get('THE_ENVIRONMENT')
         self.group = os.environ.get('THE_GROUP')
         self.role = os.environ.get('THE_ROLE')
+        self.location = os.environ.get('THE_LOCATION')
 
         if not self.client:
             self.client = 'test_dev'
@@ -107,6 +115,7 @@ class TestConfig(Config):
         self.environment = os.environ.get('THE_ENVIRONMENT')
         self.group = os.environ.get('THE_GROUP')
         self.role = os.environ.get('THE_ROLE')
+        self.location = os.environ.get('THE_LOCATION')
 
         if not self.client:
             self.client = 'test_test'
@@ -123,6 +132,7 @@ class ProdConfig(Config):
         self.environment = os.environ.get('THE_ENVIRONMENT')
         self.group = os.environ.get('THE_GROUP')
         self.role = os.environ.get('THE_ROLE')
+        self.location = os.environ.get('THE_LOCATION')
 
         if not self.client:
             self.client = 'test_prod'
