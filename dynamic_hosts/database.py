@@ -84,7 +84,7 @@ class Server:
         """
 
         '''Loads the db data'''
-        _server_schema_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "record.schema.json")
+        _server_schema_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "db", "record.schema.json")
         if os.path.isfile(_server_schema_file):
             with open(_server_schema_file) as f:
                 self._schema = json.load(f)
@@ -309,7 +309,7 @@ class ServersDB:
         self._config = configuration
 
         """Load the DB schema file"""
-        _db_schema_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "db.schema.json")
+        _db_schema_file = os.path.join(os.path.dirname(os.path.realpath(__file__)), "db", "db.schema.json")
         if os.path.isfile(_db_schema_file):
             with open(_db_schema_file) as f:
                 self._schema = json.load(f)

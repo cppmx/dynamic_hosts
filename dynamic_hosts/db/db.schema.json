@@ -3,7 +3,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://raw.githubusercontent.com/cppmx/dynamic_hosts/master/dynamic_hosts/db.schema.json",
   "type": "array",
-  "title": "Servers Schema",
+  "title": "Servers Record Schema",
   "uniqueItems": true,
   "items": {
     "$id": "#/items",

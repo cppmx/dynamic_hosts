@@ -103,4 +103,6 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-dynamic_hosts/db/
+dynamic_hosts/db/dev/
+dynamic_hosts/db/itg/
+dynamic_hosts/db/prod/
