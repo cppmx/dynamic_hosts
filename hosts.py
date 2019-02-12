@@ -12,6 +12,7 @@ Changes:
 from dynamic_hosts import configuration
 
 import argparse
+import unittest
 
 _configuration = configuration.ProdConfig()
 
@@ -26,6 +27,15 @@ def show_config():
     print(message.format("Role", _configuration.role))
     print(message.format("Location", _configuration.location))
     print("*************************************")
+
+
+def test():
+    """Runs the tests"""
+    tests = unittest.TestLoader().discover('tests', pattern='test*.py')
+
+    result = unittest.TextTestRunner(verbosity=2).run(tests)
+
+    return 0 if result.wasSuccessful() else 1
 
 
 if __name__ == "__main__":
@@ -49,6 +59,9 @@ if __name__ == "__main__":
             _configuration = configuration.DevConfig()
         elif args.env == 'test':
             _configuration = configuration.TestConfig()
+
+    if args.test:
+        exit(test())
 
     if args.config:
         show_config()
