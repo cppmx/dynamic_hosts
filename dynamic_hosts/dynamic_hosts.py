@@ -88,6 +88,17 @@ class DynamicHosts:
 
         return result
 
+    def add_server(self):
+        result = 0
+
+        try:
+            self._db.add_new_server(server_data=None, allow_host_vars=True)
+        except ValueError:
+            self._log.log_error(ValueError)
+            result = 1
+
+        return result
+
     def __init__(self, config):
         self._config = config
 

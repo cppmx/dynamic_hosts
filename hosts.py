@@ -78,6 +78,10 @@ if __name__ == "__main__":
 
     _dyn_hosts = dynamic_hosts.DynamicHosts(_configuration)
 
+    if args.new_server:
+        print("Please enter the following information:")
+        exit(_dyn_hosts.add_server())
+
     if args.list:
         data = _dyn_hosts.get_list()
 
