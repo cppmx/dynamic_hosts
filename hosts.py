@@ -9,7 +9,23 @@ Changes:
     06/02/2019     CECR     Initial version
 """
 
+from dynamic_hosts import configuration
+
 import argparse
+
+_configuration = configuration.ProdConfig()
+
+
+def show_config():
+    message = ' - {:.<20}: {}'
+    print("***** D Y N A M I C   H O S T S *****")
+    print("            CONFIGURATION")
+    print("*************************************")
+    print(message.format("Client", _configuration.client))
+    print(message.format("Environment", _configuration.environment))
+    print(message.format("Role", _configuration.role))
+    print(message.format("Location", _configuration.location))
+    print("*************************************")
 
 
 if __name__ == "__main__":
@@ -27,4 +43,13 @@ if __name__ == "__main__":
     parser.add_argument('--version', action='version', version='%(prog)s 1.0')
 
     args = parser.parse_args()
+
+    if args.env:
+        if args.env == 'dev':
+            _configuration = configuration.DevConfig()
+        elif args.env == 'test':
+            _configuration = configuration.TestConfig()
+
+    if args.config:
+        show_config()
 
