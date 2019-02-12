@@ -92,6 +92,9 @@ class DevConfig(Config):
         self.group = os.environ.get('THE_GROUP')
         self.role = os.environ.get('THE_ROLE')
 
+        if not self.client:
+            self.client = 'test_dev'
+
 
 class TestConfig(Config):
     def __init__(self):
@@ -105,6 +108,9 @@ class TestConfig(Config):
         self.group = os.environ.get('THE_GROUP')
         self.role = os.environ.get('THE_ROLE')
 
+        if not self.client:
+            self.client = 'test_test'
+
 
 class ProdConfig(Config):
     def __init__(self):
@@ -117,3 +123,6 @@ class ProdConfig(Config):
         self.environment = os.environ.get('THE_ENVIRONMENT')
         self.group = os.environ.get('THE_GROUP')
         self.role = os.environ.get('THE_ROLE')
+
+        if not self.client:
+            self.client = 'test_prod'

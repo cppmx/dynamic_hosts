@@ -299,7 +299,7 @@ class ServersDB:
 
         return self._servers
 
-    def __init__(self, client, configuration):
+    def __init__(self, configuration):
         """ServerDB constructor
 
         :param client: A Client name
@@ -315,14 +315,14 @@ class ServersDB:
                 self._schema = json.load(f)
 
         """Check if there is a folder for this client, if not then create a new one"""
-        if not os.path.isdir(os.path.join(self._config.servers_folder, client)):
+        if not os.path.isdir(os.path.join(self._config.servers_folder, self._config.client)):
             if self._config.verbose > 0:
                 self._log.log_verbose("There is no folder for this client, creating new one")
 
-            os.makedirs(os.path.join(self._config.servers_folder, client), 755)
+            os.makedirs(os.path.join(self._config.servers_folder, self._config.client), 755)
 
         """Check if there is a DB file for this client, if so then load and validate the data"""
-        self._db_file = self._config.get_db_file(client)
+        self._db_file = self._config.get_db_file(self._config.client)
 
         if os.path.isfile(self._db_file):
             with open(self._db_file) as f:

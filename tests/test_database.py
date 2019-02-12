@@ -32,19 +32,19 @@ class TestDatabase(unittest.TestCase):
 
     def test_dev_instance(self):
         self._config = configuration.DevConfig()
-        self._db = ServersDB("dev", self._config)
+        self._db = ServersDB(self._config)
 
         self.assertIsInstance(self._db, ServersDB)
 
     def test_test_instance(self):
         self._config = configuration.TestConfig()
-        self._db = ServersDB("test", self._config)
+        self._db = ServersDB(self._config)
 
         self.assertIsInstance(self._db, ServersDB)
 
     def test_prod_instance(self):
         self._config = configuration.ProdConfig()
-        self._db = ServersDB("prod", self._config)
+        self._db = ServersDB(self._config)
 
         self.assertIsInstance(self._db, ServersDB)
 
@@ -90,12 +90,12 @@ class TestDatabase(unittest.TestCase):
 
     def test_add_servers_exceptions(self):
         self._config = configuration.TestConfig()
-        self._db = ServersDB('test', self._config)
+        self._db = ServersDB(self._config)
 
         test_counter = 0
 
-        if os.path.isfile(self._config.get_db_file('test')):
-            os.remove(self._config.get_db_file('test'))
+        if os.path.isfile(self._config.get_db_file()):
+            os.remove(self._config.get_db_file())
             time.sleep(2.5)  # sleep time in seconds
 
         for word in self._test_words:
@@ -120,18 +120,18 @@ class TestDatabase(unittest.TestCase):
             if test_counter == self._max_tests:
                 break
 
-        if os.path.isfile(self._config.get_db_file('test')):
-            os.remove(self._config.get_db_file('test'))
+        if os.path.isfile(self._config.get_db_file()):
+            os.remove(self._config.get_db_file())
             time.sleep(2.5)  # sleep time in seconds
 
     def test_add_servers(self):
         self._config = configuration.TestConfig()
-        self._db = ServersDB('test', self._config)
+        self._db = ServersDB(self._config)
 
         test_counter = 0
 
-        if os.path.isfile(self._config.get_db_file('test')):
-            os.remove(self._config.get_db_file('test'))
+        if os.path.isfile(self._config.get_db_file()):
+            os.remove(self._config.get_db_file())
             time.sleep(2.5)  # sleep time in seconds
 
         for word in self._test_words:
@@ -154,18 +154,18 @@ class TestDatabase(unittest.TestCase):
             if test_counter == self._max_tests:
                 break
 
-        if os.path.isfile(self._config.get_db_file('test')):
-            os.remove(self._config.get_db_file('test'))
+        if os.path.isfile(self._config.get_db_file()):
+            os.remove(self._config.get_db_file())
             time.sleep(2.5)  # sleep time in seconds
 
     def test_update_servers(self):
         self._config = configuration.TestConfig()
-        self._db = ServersDB('test', self._config)
+        self._db = ServersDB(self._config)
 
         test_counter = 0
 
-        if os.path.isfile(self._config.get_db_file('test')):
-            os.remove(self._config.get_db_file('test'))
+        if os.path.isfile(self._config.get_db_file()):
+            os.remove(self._config.get_db_file())
             time.sleep(2.5)  # sleep time in seconds
 
         for word in self._test_words:
@@ -201,18 +201,18 @@ class TestDatabase(unittest.TestCase):
             if test_counter == self._max_tests:
                 break
 
-        if os.path.isfile(self._config.get_db_file('test')):
-            os.remove(self._config.get_db_file('test'))
+        if os.path.isfile(self._config.get_db_file()):
+            os.remove(self._config.get_db_file())
             time.sleep(2.5)  # sleep time in seconds
 
     def test_delete_server(self):
         self._config = configuration.TestConfig()
-        self._db = ServersDB('test', self._config)
+        self._db = ServersDB(self._config)
 
         test_counter = 0
 
-        if os.path.isfile(self._config.get_db_file('test')):
-            os.remove(self._config.get_db_file('test'))
+        if os.path.isfile(self._config.get_db_file()):
+            os.remove(self._config.get_db_file())
             time.sleep(2.5)  # sleep time in seconds
 
         for word in self._test_words:
@@ -240,8 +240,8 @@ class TestDatabase(unittest.TestCase):
             if test_counter == 10:
                 break
 
-        if os.path.isfile(self._config.get_db_file('test')):
-            os.remove(self._config.get_db_file('test'))
+        if os.path.isfile(self._config.get_db_file()):
+            os.remove(self._config.get_db_file())
             time.sleep(2.5)  # sleep time in seconds
 
 
