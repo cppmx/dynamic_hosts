@@ -10,14 +10,19 @@ Changes:
 """
 
 from dynamic_hosts import configuration
+from dynamic_hosts import dynamic_hosts
 
+import json
 import argparse
 import unittest
 
 _configuration = configuration.ProdConfig()
+_dyn_hosts = None
 
 
 def show_config():
+    success = 0
+
     message = ' - {:.<20}: {}'
     print("***** D Y N A M I C   H O S T S *****")
     print("            CONFIGURATION")
@@ -27,6 +32,8 @@ def show_config():
     print(message.format("Role", _configuration.role))
     print(message.format("Location", _configuration.location))
     print("*************************************")
+
+    return success
 
 
 def test():
@@ -64,5 +71,17 @@ if __name__ == "__main__":
         exit(test())
 
     if args.config:
-        show_config()
+        exit(show_config())
 
+    if args.verbose:
+        _configuration.verbose = args.verbose
+
+    _dyn_hosts = dynamic_hosts.DynamicHosts(_configuration)
+
+    if args.list:
+        data = _dyn_hosts.get_list()
+
+        if _configuration.verbose > 0:
+            print(json.dumps(data, indent=4, sort_keys=True))
+        else:
+            print(json.dumps(data))
