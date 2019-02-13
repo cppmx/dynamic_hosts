@@ -48,6 +48,7 @@ def test():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Dynamic host generating tool')
+    parser.add_argument('--client', type=str, help='A valid client')
     parser.add_argument('--config', action='store_true', help='Display current configuration')
     parser.add_argument('--env', choices=['dev', 'test', 'prod'],
                         help='Execution environment of this script. By default it is executed in production.')
@@ -76,6 +77,9 @@ if __name__ == "__main__":
 
     if args.verbose:
         _configuration.verbose = args.verbose
+
+    if args.client:
+        _configuration.client = args.client
 
     _dyn_hosts = dynamic_hosts.DynamicHosts(_configuration)
 
