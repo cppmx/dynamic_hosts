@@ -93,8 +93,21 @@ class DynamicHosts:
 
         try:
             self._db.add_new_server(server_data=None, allow_host_vars=True)
-        except ValueError:
-            self._log.log_error(ValueError)
+        except Exception as ex:
+            self._log.log_error(ex)
+
+            result = 1
+
+        return result
+
+    def update_server(self):
+        result = 0
+
+        try:
+            self._db.update_server(new_server_data=None)
+        except Exception as ex:
+            self._log.log_error(ex)
+
             result = 1
 
         return result

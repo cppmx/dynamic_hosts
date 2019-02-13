@@ -37,6 +37,23 @@ def _request_data(field):
     return result
 
 
+def _request_change_data(field, value):
+    """This function request a change in a data
+
+    :param field: Name of the field that will be changed
+    :param value: Current value of the field that is going to be changed
+    :return: The new value of this field
+    """
+    current_message = ' Current {:.<20}: {}'.format(field.capitalize(), value)
+    print(current_message)
+    result = input(' Change it {:.<20}: '.format('to'))
+
+    if not result.strip():
+        result = value
+
+    return result
+
+
 class Server:
     """Object that represents a Server
 
@@ -70,6 +87,9 @@ class Server:
         else:
             return self.__schema_validation(self._server)
 
+    def get_required_fields(self):
+        return self._schema['required']
+
     def get_data(self):
         """Returns server data
 
@@ -80,8 +100,7 @@ class Server:
     def is_equal(self, data):
         result = True
 
-        for f in self._schema['required']:
-            result &= data[f] == self._server[f]
+        result &= data['host'] == self._server['host']
 
         return result
 
@@ -166,19 +185,23 @@ class ServersDB:
 
         return result
 
-    def __request_vars_data(self):
+    def __request_vars_data(self, current_vars=None):
         """Private function to request variable information"""
         if self._config.verbose > 0:
             self._log.log_verbose("Requesting variable information")
 
         add_vars = input("Do you want to add variables for this host (y/N)? ")
-        result = {}
+        result = {} if not current_vars else current_vars
 
         while add_vars == 'y' or add_vars == 'Y':
             var_name = input("Variable name: ")
 
             if not var_name.strip():
                 self._log.log_warning("Variable name cannot be empty, try again")
+                continue
+
+            if var_name.strip() in result:
+                self._log.log_warning("That variable is already defined, please use another name for the new variable.")
                 continue
 
             var_data = input("Value for \"" + var_name + "\" variable: ")
@@ -192,6 +215,49 @@ class ServersDB:
             add_vars = input("Do you want to add another variable for this host (y/N)? ")
 
         return result
+
+    def __request_changes(self, data):
+        """This function creates a new Server object with updated information
+
+        :param data: The current Server object
+        :returns: New Server object and a flag to indicate if some filed has any change
+        """
+        new_server = None
+        new_data = dict()
+        host_vars = {}
+        current_data = data.get_data()
+        update_needed = False
+
+        for k in current_data:
+            if k == 'variables':
+                print("This host has variables")
+                question = input("Do you want to keep the current variables Y/n? ")
+
+                if question[0] == 'n' or question[0] == 'N':
+                    question = input("Do you want to remove all the variables Y/n? ")
+
+                    if question[0] == 'n' or question[0] == 'N':
+                        current_vars = current_data[k]
+                        for var in current_vars:
+                            host_vars[var] = _request_change_data(var, current_vars[var])
+
+                        host_vars = self.__request_vars_data(host_vars)
+
+                        update_needed = True
+                else:
+                    host_vars = current_data[k]
+            else:
+                new_data[k] = _request_change_data(k, current_data[k])
+
+                update_needed = True if new_data[k] != current_data[k] else update_needed
+
+        if update_needed:
+            new_server = Server(new_data)
+
+            if len(host_vars) > 0:
+                new_server.add_field('variables', host_vars)
+
+        return update_needed, new_server
 
     def add_new_server(self, server_data=None, allow_host_vars=False):
         """This function adds a new record to the DB
@@ -236,9 +302,19 @@ class ServersDB:
 
         result = False
 
+        if not new_server_data:
+            host = _request_data('host')
+            found_host = self.get_servers('host', host)
+
+            if len(found_host) == 1:
+                result, new_server_data = self.__request_changes(found_host[0])
+            else:
+                raise Exception("No record in the database matches the host")
+
+        idx = 0
         for entry in self._servers:
             if new_server_data.is_equal(entry):
-                entry = new_server_data.get_data()
+                self._servers[idx] = new_server_data.get_data()
 
                 if self._config.verbose > 0:
                     self._log.log_verbose("New Server data: " + entry.get_data())
@@ -246,6 +322,8 @@ class ServersDB:
                 result = self.__save()
 
                 break
+
+            idx += 1
 
         return result
 

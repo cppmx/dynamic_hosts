@@ -83,6 +83,10 @@ if __name__ == "__main__":
         print("Please enter the following information:")
         exit(_dyn_hosts.add_server())
 
+    if args.update_server:
+        print("Please enter the following information:")
+        exit(_dyn_hosts.update_server())
+
     if args.list:
         data = _dyn_hosts.get_list()
 
