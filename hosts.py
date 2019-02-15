@@ -32,6 +32,8 @@ def show_config():
     print(message.format("Environment", _configuration.environment))
     print(message.format("Role", _configuration.role))
     print(message.format("Location", _configuration.location))
+    if _configuration.verbose > 0:
+        print(message.format("Database", _configuration.get_db_file()))
     print("*************************************")
 
     return success
@@ -69,14 +71,14 @@ if __name__ == "__main__":
         elif args.env == 'test':
             _configuration = configuration.TestConfig()
 
+    if args.verbose:
+        _configuration.verbose = args.verbose
+
     if args.test:
         exit(test())
 
     if args.config:
         exit(show_config())
-
-    if args.verbose:
-        _configuration.verbose = args.verbose
 
     if args.client:
         _configuration.client = args.client
