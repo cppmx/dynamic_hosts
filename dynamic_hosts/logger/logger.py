@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
-"""
-Filename: logger.py
-Created on: 07/02/2019
-Project name: dynamic_hosts
-Author: Carlos Colon
-Description: 
-Changes:
-    06/02/2019     CECR     Initial version
+"""logger.py
+====================================
+@author Carlos Colón
 """
 
 
@@ -19,12 +14,14 @@ class Logger:
     _line = '''%s[%s%s%s]%s %s'''
 
     class __Colors:
+        """Private object for colors definition"""
         Reset = '\033[0m'
         Bold = '\033[01m'
         Underline = '\033[04m'
         StrikeThrough = '\033[09m'
 
         class FG:
+            """Private object for foreground colors definition"""
             Black = '\033[30m'
 
             Cyan = '\033[36m'
@@ -42,12 +39,14 @@ class Logger:
             Yellow = '\033[93m'
 
         class BG:
+            """Private object for background colors definition"""
             Black = '\033[40m'
             Green = '\033[42m'
             Blue = '\033[44m'
 
     @property
     def get_colors(self):
+        """Returns the colors object"""
         return self.__Colors
 
     def log_error(self, message):

@@ -1,13 +1,8 @@
 # -*- coding: utf-8 -*-
-"""
-Filename: database
+"""database.py
+====================================
 Created on: 08/02/2019
-Project name: dynamic_hosts
-Author: Carlos Colon
-Description: 
-Changes:
-    06/02/2019     CECR     Initial version
-    12/02/2019     CECR     Added the total of servers that are returned after being filtered
+@author Carlos Colón
 """
 
 import os
@@ -17,6 +12,7 @@ import dynamic_hosts.logger.logger as log
 
 
 class Singleton(type):
+    """Singleton base class"""
     instance = None
 
     def __call__(cls, *args, **kw):
@@ -26,7 +22,13 @@ class Singleton(type):
 
 
 def _request_data(field):
-    """This function requests a data in the terminal
+    """This is a trivial help function
+
+    It receives the name of a field or data, and uses it to show in console
+    a message requesting the value that this field or data must have.
+
+    The line that will be displayed is formatted to a length of 23 characters
+    in the following way: " - field..............: "
 
     :param field: The name of the field that will receive the data
     :return: The data that the user has typed
@@ -38,7 +40,15 @@ def _request_data(field):
 
 
 def _request_change_data(field, value):
-    """This function request a change in a data
+    """This is a trivial help function
+
+    Receives the name of a field or data and its current value, and uses it to
+    show in console a message requesting a new value for this field or data.
+
+    The lines that will be displayed are formatted to at least 23 characters of length
+    in the following way:
+    " Current field........: value"
+    " Change it to.........:"
 
     :param field: Name of the field that will be changed
     :param value: Current value of the field that is going to be changed

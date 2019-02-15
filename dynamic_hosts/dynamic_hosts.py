@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
-"""
-Filename: dynamic_hosts.py
-Created on: 12/02/2019
-Project name: dynamic_hosts
-Author: Carlos Colon
-Description: 
-Changes:
-    06/02/2019     CECR     Initial version
+"""dynamic_hosts.py
+====================================
+Created on: 09/02/2019
+@author Carlos Colón
 """
 
 from dynamic_hosts.database import ServersDB
@@ -15,27 +11,56 @@ import dynamic_hosts.logger.logger as log
 
 
 class DynamicHosts:
+    """Dynamic Hosts class
+
+    This object is responsible for assembling the list of hosts in a format understandable to Ansible.
+
+    It maintains a single instance to the database to request different actions.
+
+    This class has the following attributes:
+
+    Attributes:
+        _config (Config): An instance of an object based on Config
+        _db (ServersDB): An instance to the database
+        _log (Logger): An instance to the event logger object
+
+    All these attributes are private and can not be modified once an instance of this class is created.
+    """
+
     _config = None
     _db = None
     _log = log.Logger()
 
     @property
     def get_client(self):
+        """Returns the name of the client of the active configuration"""
         return self._config.client
 
     @property
     def get_environment(self):
+        """Returns the environment value of the active configuration"""
         return self._config.environment
 
     @property
     def get_role(self):
+        """Returns the role value of the active configuration"""
         return self._config.role
 
     @property
     def get_location(self):
+        """Returns the location value of the active configuration"""
         return self._config.location
 
     def __allow_host(self, host_data):
+        """A private help function
+
+        This function receives a dictionary with information about a specific host,
+        and with that information it makes an analysis to determine if this host
+        should be included or not in the final list.
+
+        :param host_data: A host's data dictionary
+        :return: True if the host is validated by the filters, otherwise False
+        """
         result = True
 
         if self._config.verbose > 1:
@@ -65,6 +90,12 @@ class DynamicHosts:
         return result
 
     def get_list(self):
+        """Get List function
+
+        This function returns a list of hosts in a format that can be used by Ansible.
+
+        :return: An Ansible host's inventory in JSON format
+        """
         hosts = []
         result = dict()
         result['_meta'] = {
@@ -89,6 +120,10 @@ class DynamicHosts:
         return result
 
     def add_server(self):
+        """Trivial function that notifies the database that the user wants to add a new record
+
+        :return: 0 if the insertion of the new record was successful, otherwise 1
+        """
         result = 0
 
         try:
@@ -101,6 +136,10 @@ class DynamicHosts:
         return result
 
     def update_server(self):
+        """Trivial function that notifies the database that the user wants to modify a record
+
+        :return: 0 if the update of the record was successful, otherwise 1
+        """
         result = 0
 
         try:
