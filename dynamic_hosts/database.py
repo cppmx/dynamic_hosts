@@ -243,10 +243,10 @@ class ServersDB:
                 print("This host has variables")
                 question = input("Do you want to keep the current variables Y/n? ")
 
-                if question[0] == 'n' or question[0] == 'N':
+                if question and (question[0] == 'n' or question[0] == 'N'):
                     question = input("Do you want to remove all the variables Y/n? ")
 
-                    if question[0] == 'n' or question[0] == 'N':
+                    if question and (question[0] == 'n' or question[0] == 'N'):
                         current_vars = current_data[k]
                         for var in current_vars:
                             host_vars[var] = _request_change_data(var, current_vars[var])
