@@ -77,11 +77,11 @@ if __name__ == "__main__":
     if args.test:
         exit(test())
 
-    if args.config:
-        exit(show_config())
-
     if args.client:
         _configuration.client = args.client
+
+    if args.config:
+        exit(show_config())
 
     _dyn_hosts = dynamic_hosts.DynamicHosts(_configuration)
 
