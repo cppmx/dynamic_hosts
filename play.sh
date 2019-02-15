@@ -6,32 +6,6 @@ WARN_MSG="[\e[93m WARNING \e[39m]"
 SUCCESS_MSG="[\e[32m SUCCESS \e[39m]"
 NORMAL_MSG="[\e[94m  INFO   \e[39m]"
 
-# No action will be allowed if there is no BD created
-CLIENTS=( $(for folder in `ls -d dynamic_hosts/db/prod/*`; do if [[ "${folder}" != *"test"* ]]; then basename ${folder:1}; fi; done) )
-if [[ -z "$CLIENTS" ]]; then
-    echo -e "$ERROR_MSG No client has yet been defined"
-    echo -e "$ERROR_MSG Please first capture some servers for some client"
-    echo -e "$ERROR_MSG Test clients are not valid"
-    echo -e "$ERROR_MSG To add a server use one of the following commands:"
-    echo -e "$ERROR_MSG   hosts.py --client <CLIENT_NAME> --new-server"
-    echo -e "$ERROR_MSG   python3 hosts.py --client <CLIENT_NAME> --new-server"
-    exit 1
-fi
-
-# If the first parameter is not a valid client
-# then it is necessary to show an error message and determine the execution of this script
-if [[ -z "$1" ]] || [[ -z "$(echo "${CLIENTS[@]:0}" | grep -ow $1)" ]]; then
-    echo -e "$ERROR_MSG  You need to specify the client's name as the first parameter."
-    echo -e "${NORMAL_MSG}  The available clients are:"
-
-    for i in "${CLIENTS[@]}"
-    do
-        echo -e "${NORMAL_MSG}  - $i"
-    done
-
-    exit 1
-fi
-
 DEPLOY_VERSION="0.0.1"
 DESCRIPTION="This script allows you to run a playbook in a container using a dynamic host list."
 
@@ -43,9 +17,6 @@ THE_GROUPS=( "all" "self" )
 LOCAL_SSH="$(dirname ~/.ssh)/.ssh"
 KNOWN_HOSTS_FILE=
 
-CLIENT=$1
-shift 1
-
 DOCKER_CMD=
 SRC_DIR=
 CONTAINER_PROXY=
@@ -54,6 +25,7 @@ CLIENT_FILER="--env THE_CLIENT=$CLIENT"
 GROUP_FILTER=""
 ENV_FILTER=""
 ROLE_FILTER=""
+LOCATION_FILTER=""
 EXTRAS=
 
 help_header()
@@ -73,7 +45,7 @@ usage()
     help_header
     echo ""
     echo " Usage:"
-    echo -e "  \e[97m$(basename $0)\e[39m CLIENT [ENVIRONMENT] [GROUP] [ROLES]"
+    echo -e "  \e[97m$(basename $0)\e[39m CLIENT [ENVIRONMENT] [ROLES] [LOCATION] [GROUP]"
     echo ""
     echo " Client:"
     for i in "${CLIENTS[@]}"
@@ -88,19 +60,21 @@ usage()
     do
         echo "        $i"
     done
-    echo " Groups:"
-    echo "   -g|--group       It sets the group of the hosts."
-    echo -e "                    If omitted, a group called \e[97mall\e[39m will be used."
-    echo " The available groups are:"
-    for i in "${THE_GROUPS[@]}"
-    do
-        echo "        $i"
-    done
     echo " Roles:"
     echo "   -e|--env         It sets the role of the hosts."
     echo "                   If omitted, all roles will be used."
     echo " The available roles are:"
     for i in "${ROLES[@]}"
+    do
+        echo "        $i"
+    done
+    echo " Location:"
+    echo "   -l|--location    It sets the location of the hosts."
+    echo " Groups:"
+    echo "   -g|--group       It sets the group of the hosts."
+    echo -e "                    If omitted, a group called \e[97mall\e[39m will be used."
+    echo " The available groups are:"
+    for i in "${THE_GROUPS[@]}"
     do
         echo "        $i"
     done
@@ -150,6 +124,45 @@ usage()
   }\n"
 }
 
+get_clients()
+{
+    # No action will be allowed if there is no BD created
+    CLIENTS=( $(for folder in `ls -d dynamic_hosts/db/prod/*`; do if [[ "${folder}" != *"test"* ]]; then basename ${folder:1}; fi; done) )
+    if [[ -z "$CLIENTS" ]]; then
+        echo -e "$ERROR_MSG No client has yet been defined"
+        echo -e "$ERROR_MSG Please first capture some servers for some client"
+        echo -e "$ERROR_MSG Test clients are not valid"
+        echo -e "$ERROR_MSG To add a server use one of the following commands:"
+        echo -e "$ERROR_MSG   hosts.py --client <CLIENT_NAME> --new-server"
+        echo -e "$ERROR_MSG   python3 hosts.py --client <CLIENT_NAME> --new-server"
+        exit 1
+    fi
+}
+
+if [[ ! -z "$1" ]] && [[ "$1" == "--help" ]]; then
+    get_clients
+    usage
+    exit 0
+fi
+
+get_clients
+# If the first parameter is not a valid client
+# then it is necessary to show an error message and determine the execution of this script
+if [[ -z "$1" ]] || [[ -z "$(echo "${CLIENTS[@]:0}" | grep -ow $1)" ]]; then
+    echo -e "$ERROR_MSG  You need to specify the client's name as the first parameter."
+    echo -e "${NORMAL_MSG}  The available clients are:"
+
+    for i in "${CLIENTS[@]}"
+    do
+        echo -e "${NORMAL_MSG}  - $i"
+    done
+
+    exit 1
+fi
+
+CLIENT=$1
+shift 1
+
 if [[ $# -gt 0 ]]; then
     while [[ "$1" != "" ]]; do
         case $1 in
@@ -180,6 +193,17 @@ if [[ $# -gt 0 ]]; then
                     ROLE_FILTER="--env THE_ROLE=$2"
                 else
                     echo -e "$ERROR_MSG Unknown role option: $2"
+                    usage
+                    exit 1
+                fi
+                shift 2
+                continue
+                ;;
+            -l|--location)
+                if [[ ! -z "$2" ]]; then
+                    LOCATION_FILTER="--env THE_LOCATION=$2"
+                else
+                    echo -e "$ERROR_MSG A data is expected for the location"
                     usage
                     exit 1
                 fi
@@ -319,4 +343,4 @@ if [[ "${http_proxy}" != "" ]]; then
     CONTAINER_PROXY="${CONTAINER_PROXY} --env http_proxy=$http_proxy"
 fi
 
-${DOCKER_CMD} run -it --rm -w ${SRC_DIR} ${CONTAINER_PROXY} ${CLIENT_FILER} ${ENV_FILTER} ${GROUP_FILTER} ${ROLE_FILTER} -e LOCK_NAME=ansible-playbook-${USER} ${IMAGE_NAME} ansible-playbook -v playbook/playbook.yml -i hosts.py -e do_retry=false ${TAGS} ${EXTRAS}
+${DOCKER_CMD} run -it --rm -w ${SRC_DIR} ${CONTAINER_PROXY} ${CLIENT_FILER} ${ENV_FILTER} ${ROLE_FILTER} ${LOCATION_FILTER} ${GROUP_FILTER} -e LOCK_NAME=ansible-playbook-${USER} ${IMAGE_NAME} ansible-playbook -v playbook/playbook.yml -i hosts.py -e do_retry=false ${TAGS} ${EXTRAS}
