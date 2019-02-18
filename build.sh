@@ -7,7 +7,7 @@ SUCCESS_MSG="[\e[32m SUCCESS \e[39m]"
 NORMAL_MSG="[\e[94m  INFO   \e[39m]"
 
 VERSION=$(cat version)
-BUILD_DIR=./dist/
+BUILD_DIR=./versions/
 DIST_FILE=dyn_hosts.${VERSION}.tar.gz
 MD5_FILE=dyn_hosts.${VERSION}.md5
 CONTENT_FILE=./build.txt
