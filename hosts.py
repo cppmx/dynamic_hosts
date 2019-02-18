@@ -10,8 +10,14 @@ Changes:
     06/02/2019     CECR     Initial version
 """
 
-from dynamic_hosts import configuration
-from dynamic_hosts import dynamic_hosts
+try:
+    import dynamic_hosts._version
+    from dynamic_hosts import configuration
+    from dynamic_hosts import dynamic_hosts
+except ImportError:
+    print("The script has not found the necessary dependencies and will be closed.")
+    print("Please execute the installation command: 'python setup.py install'")
+    exit(2)
 
 import json
 import argparse
@@ -61,7 +67,7 @@ if __name__ == "__main__":
     parser.add_argument('--update-server', action='store_true', help='Update information of a server.')
     parser.add_argument('--verbose', '-v', action='count',
                         help='Displays extra data in the console output. It should not be used in production.')
-    parser.add_argument('--version', action='version', version='%(prog)s 1.0')
+    parser.add_argument('--version', action='version', version='%(prog)s {}'.format(__version__))
 
     args = parser.parse_args()
 

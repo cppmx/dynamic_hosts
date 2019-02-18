@@ -17,7 +17,9 @@ sys.path.insert(0, '.')
 requirements = ['colorama', 'jsonschema']
 packages = find_packages()
 
-__version__ = '0.0.1.0'
+ver_file = open("version")
+
+__version__ = ver_file.read()
 __date__ = '2019/13/02 16:00:00'
 __author__ = 'Carlos Colon <espacio.sideral@gmail.com>'
 __build__ = subprocess.check_output('git describe --tags --always HEAD'.split()).decode().strip()

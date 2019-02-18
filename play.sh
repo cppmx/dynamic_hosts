@@ -6,8 +6,8 @@ WARN_MSG="[\e[93m WARNING \e[39m]"
 SUCCESS_MSG="[\e[32m SUCCESS \e[39m]"
 NORMAL_MSG="[\e[94m  INFO   \e[39m]"
 
-DEPLOY_VERSION="0.0.1"
-DESCRIPTION="This script allows you to run a playbook in a container using a dynamic host list."
+DEPLOY_VERSION=$(cat version)
+DESCRIPTION="Script to run a playbook in a container"
 
 IMAGE_NAME=dynamic_hosts:latest
 BUILD_ENV_PROJECT=$(pwd)
@@ -31,7 +31,7 @@ EXTRAS=
 help_header()
 {
     echo "|--------------------------------------------------------------------------------|"
-    echo -e "|     \e[36mA N S I B L E   W I T H   D Y N A M I C   H O S T S\e[39m            |"
+    echo -e "|           \e[36mA N S I B L E   W I T H   D Y N A M I C   H O S T S\e[39m                  |"
     echo "|--------------------------------------------------------------------------------|"
     printf "|%20s ... %-65s|\n" "Current environment" "$(echo -e "\e[97m${1}\e[39m")"
     printf "|%20s ... %-65s|\n" "Script Version" "$(echo -e "\e[97m${DEPLOY_VERSION}\e[39m")"

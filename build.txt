@@ -1,0 +1,9 @@
+hosts.py
+play.sh
+setup.py
+version
+ansible.cfg
+dynamic_hosts/db/db.schema.json
+dynamic_hosts/db/record.schema.json
+dynamic_hosts/logger/
+dynamic_hosts/*.py
