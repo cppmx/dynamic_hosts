@@ -5,7 +5,7 @@ LABEL maintainer="espacio.sideral@gmail.com"
 
 ENV LANG en_US.utf8
 
-RUN apk add --update bash python3 ansible git \
+RUN apk add --update bash python3 ansible \
  && rm -rf /var/cache/apk/*
 
 WORKDIR /src

@@ -22,7 +22,7 @@ ver_file = open("version")
 __version__ = ver_file.read()
 __date__ = '2019/13/02 16:00:00'
 __author__ = 'Carlos Colon <espacio.sideral@gmail.com>'
-__build__ = subprocess.check_output('git describe --tags --always HEAD'.split()).decode().strip()
+__build = 'ce383c3'
 
 with open('dynamic_hosts/_version.py', 'w+') as f:
     f.write('''\
@@ -33,7 +33,7 @@ __version__ = '{}'
 __date__ = '{}'
 __author__ = '{}'
 __build__ = '{}'
-'''.format(__version__, __date__, __author__, __build__))
+'''.format(__version__, __date__, __author__, __build))
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
