@@ -7,7 +7,7 @@ SUCCESS_MSG="[\e[32m SUCCESS \e[39m]"
 NORMAL_MSG="[\e[94m  INFO   \e[39m]"
 
 VERSION=$(cat version)
-BUILD_DIR=./versions/
+BUILD_DIR=$(realpath $(dirname "$0")/versions/)
 DIST_FILE=dyn_hosts.${VERSION}.tar.gz
 MD5_FILE=dyn_hosts.${VERSION}.md5
 CONTENT_FILE=./build.txt
@@ -58,8 +58,8 @@ if [[ -f "${BUILD_DIR}${DIST_FILE}" ]]; then
         exit 1
     else
         echo -e "$NORMAL_MSG Deleting the current file"
-        rm ${BUILD_DIR}${DIST_FILE}
-        rm ${BUILD_DIR}${MD5_FILE}
+        rm ${BUILD_DIR}/${DIST_FILE}
+        rm ${BUILD_DIR}/${MD5_FILE}
     fi
 fi
 
@@ -69,17 +69,28 @@ for line in $(cat ${CONTENT_FILE}); do
     CONTENT_LIST="$CONTENT_LIST $line"
 done
 
+echo -e "$NORMAL_MSG Patching setup.py"
+BUILD_LINE=$(cat setup.py | grep "__build =")
+BUILD_VALUE=$(python -c "import subprocess; print(subprocess.check_output('git describe --tags --always HEAD'.split()).decode().strip())")
+NEW_BUILD_LINE="__build = '$BUILD_VALUE'"
+sed -i "s/${BUILD_LINE}/${NEW_BUILD_LINE}/" setup.py
+
+if [[ "$(cat setup.py | grep "__build =")" != "${NEW_BUILD_LINE}" ]]; then
+    echo -e "$ERROR_MSG Couldn't patch setup.py file"
+    exit 1
+fi
+
 echo -e "$NORMAL_MSG Creating the distribution file"
-${TAR_CMD} -czvf ${BUILD_DIR}${DIST_FILE} ${CONTENT_LIST}
+${TAR_CMD} -czf ${BUILD_DIR}/${DIST_FILE} ${CONTENT_LIST}
 
 RESULT=$?
 
 if [[ "$RESULT" -eq 0 ]]; then
     cd ${BUILD_DIR}
-    ${MD5_CMD} ${DIST_FILE} > ${MD5_FILE}
+    ${MD5_CMD} ${BUILD_DIR}/${DIST_FILE} > ${BUILD_DIR}/${MD5_FILE}
     echo -e "$SUCCESS_MSG A new distribution file has been created successfully"
-    echo -e "$SUCCESS_MSG Dist file: $BUILD_DIR$DIST_FILE"
-    echo -e "$SUCCESS_MSG MD5 file: $BUILD_DIR$MD5_FILE"
+    echo -e "$SUCCESS_MSG Dist file: $BUILD_DIR/$DIST_FILE"
+    echo -e "$SUCCESS_MSG MD5 file: $BUILD_DIR/$MD5_FILE"
     cd ..
 else
     echo -e "$ERROR_MSG An error occurred while trying to create the distribution file, please check the output messages."
