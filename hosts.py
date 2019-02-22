@@ -11,7 +11,7 @@ Changes:
 """
 
 try:
-    import dynamic_hosts._version
+    import dynamic_hosts._version as _V_
     from dynamic_hosts import configuration
     from dynamic_hosts import dynamic_hosts
 except ImportError:
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     parser.add_argument('--update-server', action='store_true', help='Update information of a server.')
     parser.add_argument('--verbose', '-v', action='count',
                         help='Displays extra data in the console output. It should not be used in production.')
-    parser.add_argument('--version', action='version', version='%(prog)s {}'.format(__version__))
+    parser.add_argument('--version', action='version', version='%(prog)s {} build {}'.format(_V_.__version__, _V_.__build__))
 
     args = parser.parse_args()
 
