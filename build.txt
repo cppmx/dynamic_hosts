@@ -1,6 +1,8 @@
 Dockerfile
 hosts.py
 play.sh
+README.md
+LICENSE
 setup.py
 version
 ansible.cfg
