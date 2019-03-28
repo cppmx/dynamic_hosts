@@ -17,11 +17,12 @@ THE_GROUPS=( "all" "self" )
 LOCAL_SSH="$(dirname ~/.ssh)/.ssh"
 KNOWN_HOSTS_FILE=
 
+USE_VOLUME=0
 DOCKER_CMD=
 SRC_DIR=
 CONTAINER_PROXY=
+VOLUME_OPTION=
 
-CLIENT_FILER="--env THE_CLIENT=$CLIENT"
 GROUP_FILTER=""
 ENV_FILTER=""
 ROLE_FILTER=""
@@ -162,6 +163,7 @@ fi
 
 CLIENT=$1
 shift 1
+CLIENT_FILER="--env THE_CLIENT=$CLIENT"
 
 if [[ $# -gt 0 ]]; then
     while [[ "$1" != "" ]]; do
@@ -233,6 +235,7 @@ if [[ -z "$(git --version | grep windows)" ]]; then
     DOCKER_CMD=$(which docker)
     BUILD_ENV_PROJECT=$(pwd)/automation
     SRC_DIR=/src
+    USE_VOLUME=1
 else
     DOCKER_CMD="winpty docker"
     BUILD_ENV_PROJECT=/$(pwd)/automation
@@ -329,6 +332,10 @@ build_image()
     rm -fr ./ssh
 }
 
+if [[ ${USE_VOLUME} -eq 1 ]]; then
+    VOLUME_OPTION="-v $BUILD_ENV_PROJECT:/src"
+fi
+
 image_exist
 
 if [[ $? -eq 0 ]]; then
@@ -343,4 +350,4 @@ if [[ "${http_proxy}" != "" ]]; then
     CONTAINER_PROXY="${CONTAINER_PROXY} --env http_proxy=$http_proxy"
 fi
 
-${DOCKER_CMD} run -it --rm -w ${SRC_DIR} ${CONTAINER_PROXY} ${CLIENT_FILER} ${ENV_FILTER} ${ROLE_FILTER} ${LOCATION_FILTER} ${GROUP_FILTER} -e LOCK_NAME=ansible-playbook-${USER} ${IMAGE_NAME} ansible-playbook -v playbook/playbook.yml -i hosts.py -e do_retry=false ${TAGS} ${EXTRAS}
+${DOCKER_CMD} run -it --rm -w ${SRC_DIR} ${VOLUME_OPTION} ${CONTAINER_PROXY} ${CLIENT_FILER} ${ENV_FILTER} ${ROLE_FILTER} ${LOCATION_FILTER} ${GROUP_FILTER} -e LOCK_NAME=ansible-playbook-${USER} ${IMAGE_NAME} ansible-playbook -v playbook/playbook.yml -i hosts.py -e do_retry=false ${TAGS} ${EXTRAS}
