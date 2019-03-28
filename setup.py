@@ -22,7 +22,7 @@ ver_file = open("version")
 __version__ = ver_file.read()
 __date__ = '2019/13/02 16:00:00'
 __author__ = 'Carlos Colon <espacio.sideral@gmail.com>'
-__build = 'f234981'
+__build = '9385270'
 
 with open('dynamic_hosts/_version.py', 'w+') as f:
     f.write('''\
