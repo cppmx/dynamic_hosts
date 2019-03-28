@@ -86,12 +86,13 @@ ${TAR_CMD} -czf ${BUILD_DIR}/${DIST_FILE} ${CONTENT_LIST}
 RESULT=$?
 
 if [[ "$RESULT" -eq 0 ]]; then
+    prev=$(pwd)
     cd ${BUILD_DIR}
-    ${MD5_CMD} ${BUILD_DIR}/${DIST_FILE} > ${BUILD_DIR}/${MD5_FILE}
+    ${MD5_CMD} ${DIST_FILE} > ${MD5_FILE}
     echo -e "$SUCCESS_MSG A new distribution file has been created successfully"
     echo -e "$SUCCESS_MSG Dist file: $BUILD_DIR/$DIST_FILE"
     echo -e "$SUCCESS_MSG MD5 file: $BUILD_DIR/$MD5_FILE"
-    cd ..
+    cd ${prev}
 else
     echo -e "$ERROR_MSG An error occurred while trying to create the distribution file, please check the output messages."
 fi
